@@ -1,12 +1,32 @@
-restify = require 'restify'
+# Configurations
+env = process.env.NODE_ENV || 'development'
+config = require('./config/config')[env]
 
-server = restify.createServer
-  name: 'peacemakers-api'
+# Database connection
+mongoose = require 'mongoose'
+mongoose.connect config.db
 
-server.pre restify.pre.userAgentConnection()
+# Models
+require './models/user'
+require './models/school'
 
-server.get '/api/:name', (req, res, next) ->
-  res.send 'Hello ' + req.params.name
+# Authentication Middlware
+passport = require 'passport'
+require('./config/passport')(passport, config)
 
-server.listen 8080, ->
-  console.log '%s listening at %s', server.name, server.url
+# Express
+express = require 'express'
+app = express()
+app.use express.bodyParser()
+app.use passport.initialize()
+
+# Modules
+auth = require('./modules/auth')(app, config)
+permissions = require('./modules/permissions')(app, config)
+roles = require('./modules/roles')(app, config)
+users = require('./modules/users')(app, config)
+schools = require('./modules/schools')(app)
+
+# Start server
+app.listen 3000
+console.log "Listening on port 3000..."
