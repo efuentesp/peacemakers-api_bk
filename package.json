@@ -24,6 +24,7 @@
     "node": ">=0.8.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec test/server/*.test.js"
+    "start": "nodemon app/server.js",
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec tests/*.test.js"
   }
 }
